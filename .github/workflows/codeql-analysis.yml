@@ -26,10 +26,15 @@ jobs:
               with:
                   languages: 'cpp'
 
+            # 🔹 자동 빌드(AutoBuild) 제거 (기존 실패 코드)
+            # - name: Autobuild
+            #   uses: github/codeql-action/autobuild@v3
+
+            # ✅ 명확한 수동 빌드 단계 추가 (C 파일 컴파일)
             - name: Build C Project
               run: |
-                  gcc -o gpt gpt.c  # 🔹 C 코드 컴파일 (이 과정이 필수!)
-                  ls -l  # 🔹 빌드된 파일 확인
+                  gcc -o gpt gpt.c  # 🔹 C 코드 수동 빌드
+                  ls -l              # 🔹 빌드된 파일 확인
 
             - name: Perform CodeQL Analysis
               uses: github/codeql-action/analyze@v3
