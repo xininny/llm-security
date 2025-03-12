@@ -24,10 +24,12 @@ jobs:
             - name: Initialize CodeQL
               uses: github/codeql-action/init@v3
               with:
-                  languages: 'cpp' # C/C++ 코드 분석하도록 변경
+                  languages: 'cpp'
+
+            - name: Build C Project
+              run: |
+                  gcc -o gpt gpt.c  # 🔹 C 코드 컴파일 (이 과정이 필수!)
+                  ls -l  # 🔹 빌드된 파일 확인
 
             - name: Perform CodeQL Analysis
               uses: github/codeql-action/analyze@v3
-
-            - name: Build project
-              run: gcc -o gpt gpt.c
