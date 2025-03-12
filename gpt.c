@@ -1,20 +1,27 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
+#include <string.h>
+
+void vulnerable_function(char *user_input) {
+    char buffer[16]; // 크기가 16바이트인 버퍼 선언
+    printf("Copying input into buffer...\n");
+
+    // 🚨 취약점: strcpy()를 사용하여 입력을 제한 없이 복사
+    strcpy(buffer, user_input);
+
+    printf("Input copied successfully!\n");
+}
 
 int main() {
-    int fd = open("example.txt", O_CREAT | O_WRONLY, 0644);
+    char user_input[128]; // 사용자가 입력할 수 있는 공간 (버퍼보다 훨씬 큼)
     
-    if (fd == -1) {
-        perror("Failed to open file");
-        return 1;
-    }
+    printf("Enter some text: ");
+    fgets(user_input, sizeof(user_input), stdin); // 사용자 입력 받기
 
-    close(fd); // 정상적인 파일 닫기
+    // 개행 문자 제거
+    user_input[strcspn(user_input, "\n")] = '\0';
 
-    // CWE-1341: 파일 디스크립터를 다시 닫음 (double close)
-    close(fd); // 잘못된 동작: fd는 이미 닫혔음
+    // 취약한 함수 호출
+    vulnerable_function(user_input);
 
     return 0;
 }
