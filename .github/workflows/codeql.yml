@@ -34,6 +34,7 @@ jobs:
               with:
                   languages: ${{ matrix.language }}
                   build-mode: ${{ matrix.build-mode }}
+                  queries: security-extended,security-and-quality # ✅ CodeQL 확장 분석 설정 (여기로 이동)
 
             # ✅ 실제 빌드 명령어 추가 (C 파일 컴파일)
             - name: Build C Project
@@ -44,10 +45,4 @@ jobs:
             - name: Perform CodeQL Analysis
               uses: github/codeql-action/analyze@v3
               with:
-                  category: '/language:${{matrix.language}}'
-
-            - name: Perform CodeQL Analysis
-              uses: github/codeql-action/analyze@v3
-              with:
-                  category: '/language:${{matrix.language}}'
-                  queries: security-extended,security-and-quality # 🔹 분석 범위 확장
+                  category: '/language:${{matrix.language}}' # ✅ 중복 실행 방지
