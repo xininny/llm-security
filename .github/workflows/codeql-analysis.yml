@@ -24,7 +24,7 @@ jobs:
             - name: Initialize CodeQL
               uses: github/codeql-action/init@v2
               with:
-                  languages: 'javascript, python' # 사용할 언어 지정
+                  languages: 'cpp' # C/C++ 코드 분석하도록 변경
 
             - name: Perform CodeQL Analysis
               uses: github/codeql-action/analyze@v2
