@@ -1,21 +1,34 @@
-# Security Policy
+name: 'CodeQL Analysis'
 
-## Supported Versions
+on:
+push:
+branches: ['main']
+pull_request:
+branches: ['main']
+schedule: - cron: '0 12 \* \* 1' # 매주 월요일 정기 분석
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+jobs:
+analyze:
+name: Analyze
+runs-on: ubuntu-latest
+permissions:
+security-events: write
+actions: read
+contents: read
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-## Reporting a Vulnerability
+            - name: Initialize CodeQL
+              uses: github/codeql-action/init@v3
+              with:
+                  languages: 'cpp'
 
-Use this section to tell people how to report a vulnerability.
+            - name: Build C Project (Manual Build)
+              run: |
+                  gcc -o gpt gpt.c  # 🔹 C 코드 수동 빌드
+                  ls -l              # 🔹 빌드된 파일 확인
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+            - name: Perform CodeQL Analysis
+              uses: github/codeql-action/analyze@v3
