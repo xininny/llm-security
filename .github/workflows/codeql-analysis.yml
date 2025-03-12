@@ -10,12 +10,20 @@ on:
 
 jobs:
     analyze:
-        name: Analyze
-        runs-on: ubuntu-latest
+        name: Analyze (${{ matrix.language }})
+        runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
         permissions:
             security-events: write
+            packages: read
             actions: read
             contents: read
+
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - language: c-cpp
+                      build-mode: manual
 
         steps:
             - name: Checkout repository
@@ -24,14 +32,16 @@ jobs:
             - name: Initialize CodeQL
               uses: github/codeql-action/init@v3
               with:
-                  languages: 'cpp'
-                  build-mode: manual # 🔹 자동 빌드 해제
+                  languages: ${{ matrix.language }}
+                  build-mode: ${{ matrix.build-mode }}
 
-            # ✅ 명확한 수동 빌드 단계 추가 (C 파일 컴파일)
+            # ✅ 실제 빌드 명령어 추가 (C 파일 컴파일)
             - name: Build C Project
               run: |
-                  gcc -o gpt gpt.c  # 🔹 C 코드 수동 빌드
-                  ls -l              # 🔹 빌드된 파일 확인
+                  gcc -o gpt gpt.c  # ✅ C 코드 수동 빌드
+                  ls -l              # ✅ 빌드된 파일 확인
 
             - name: Perform CodeQL Analysis
               uses: github/codeql-action/analyze@v3
+              with:
+                  category: '/language:${{matrix.language}}'
